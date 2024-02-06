@@ -24,8 +24,7 @@
 また、教師無し学習の例としてこちらの File Exchange のコードでは他の手法も紹介しています。
 
 - [MATLABによる予知保全のデモ](https://jp.mathworks.com/matlabcentral/fileexchange/86323-matlab)
-
-
+ 
 ## English description
 
 This zip file includes the demo files for the webinar "Predictive Maintenance with MATLAB" (in Japanese)
@@ -56,4 +55,4 @@ train_FD001_Unit_100.csv
 - fullDataset.mat
 - classificationData.mat
 
-Copyright 2016-2021 The MathWorks, Inc.
+Copyright 2016-2024 The MathWorks, Inc.
