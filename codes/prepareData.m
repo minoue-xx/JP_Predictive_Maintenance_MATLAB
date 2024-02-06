@@ -1,9 +1,11 @@
-% Copyright 2016-2021 The MathWorks, Inc.
+% Copyright 2016-2024 The MathWorks, Inc.
 % 下記URLで公開されているデータをダウンロードし、
 % Data Set FD001をエンジン毎にcsvファイルとして分離して使用します。
-% https://ti.arc.nasa.gov/tech/dash/groups/pcoe/prognostic-data-repository/
-% Turbofan Engine Degradation Simulation Data Set
-% https://ti.arc.nasa.gov/c/6/
+% https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/
+% 6. Turbofan Engine Degradation Simulation
+% Download: https://data.nasa.gov/Aeorspace/CMAPSS-Jet-Engine-Simulated-Data/ff5v-kuh6  
+% Download Mirror: https://phm-datasets.s3.amazonaws.com/NASA/6.+Turbofan+Engine+Degradation+Simulation+Data+Set.zip
+% Data Set Citation: A. Saxena and K. Goebel (2008). “Turbofan Engine Degradation Simulation Data Set”, NASA Prognostics Data Repository, NASA Ames Research Center, Moffett Field, CA
 %
 %  Data Set: FD001
 % * Train trjectories: 100
@@ -17,32 +19,29 @@
 
 % 今回使用するデータファイル(CMAPSSData.zip)を下記URLからダウンロードし、
 % OriginalDataSetフォルダに展開します。
-% "Save As..." ダイアログが立ち上がりますので、
-% ".\originalDataSet" に CMAPSSData.zip を保存してください。
 originalFile = 'originalDataSet\CMAPSSData.zip';
 dataDir = 'originalDataSet';
 if ~exist(dataDir,'dir')
     mkdir(dataDir);
 end
 if ~exist(originalFile, 'file') % download only once
-    web('http://ti.arc.nasa.gov/c/6')
-    disp('Downloading 12MB data set... this might take a while');
-    fprintf(['\nDownload of the original dataset in progress...\n',...
-        'Please allow the download of the .zip file to complete before proceeding.\n\n',...
-        'Press a key when done.\n'])
-    winopen(dataDir);
+    disp("Downloading 12MB data set... this might take a while");
+    disp(newline + "nDownload of the original dataset in progress..." + newline + ...
+        "Please allow the download of the .zip file to complete before proceeding." + newline);
+    datafile = websave(originalFile,'https://data.nasa.gov/download/ff5v-kuh6/application%2Fzip');
+    disp(newline + "Download Complete: Press any key to proceed")
     pause
 end
 
 % 上記ステップが正常に機能しない場合は Webブラウザ から直接
-% http://ti.arc.nasa.gov/c/6
+% https://data.nasa.gov/Aeorspace/CMAPSS-Jet-Engine-Simulated-Data/ff5v-kuh6
 % にアクセスし、CMAPSSData.zip をダウンロードできます。
 % 本スクリプト (prepareData.m) が存在するフォルダ化に
 % originalDataSet という名前のフォルダを作成し、その中に CMAPSSData.zip を保存してください。
 
 % その後下記を実行してください。
 unzip(originalFile, dataDir);
-disp(['Data is unziped to the directory ', dataDir, '.']);
+disp(['Data is unziped to the directory: ', dataDir, '.']);
 
 %% train_FD001.txtのデータを、エンジンごとに分割します。
 outputFolder = 'originalDataSet';
@@ -82,8 +81,8 @@ for ii = 1:NofEngine
 end
 
 % 故障まで残されたフライト数
-% splitapply で 各Unitのそれぞれのデータに対して subtractMax 関数を適用します。
-TimeToFail = splitapply(@(x) {subtractMax(x)},dataSet.Time,dataSet.Unit);
+% splitapply で 各Unitのそれぞれのデータに対して x-max(x) を適用します。
+TimeToFail = splitapply(@(x) {x-max(x)},dataSet.Time,dataSet.Unit);
 dataSet.TimeToFail = cat(1,TimeToFail{:});
 
 % 上記２行と同じ処理は for ループを使用した下記と同じ処理です。
